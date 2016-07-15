@@ -1,0 +1,1043 @@
+var niceness = ["TO BE CONTINUED....\nDON DON DON!\n-Creeper 3000","Amazing!\n-Blaze Runner","Oh my!\n-Duskpin Ultimate","This is great graphics.\n-ElliotThomas","A great continuation of the Acid Escape!\n-Trivial Master","Another well-made platformer.\n-KCF","Two things make this platformer stand out:\nThe graphics, and the storyine. \n-Chester Banks","I love the menu design. :D\n-AlexT","I like that there's a storyline.\n-WillTheProgrammer","The first one was good-and so was this one!\n-The Doctress","I can only say 'wow'\n -meihong cen","A very moo-worthy program!\n-Red Cow","The only thing I can say is\n that the graphics are AMAZING.\n-#1 Coder","Please make another version... PLEASE ;(\n-devandangi8","The tree on the home page is awesome!\n-F J Valentin ","The Factory platformers are the BEST!\n-LoganWeisberg","This game is the best on KA!\n-LoganWeisberg","When's part three coming? I need to play it!\n-Albrino fdo"];
+
+var time =0;
+
+var niceNum = niceness.length;
+var isRaining = true; //change this to false to reduce some lag
+var nice = random(0, niceNum - 1);
+
+
+
+var blocks = [];
+
+var currentLevel = 0;//What stage you are on
+
+var keys = [];
+
+
+var xPositions = [200];//Leaf rain stuff
+var yPositions = [0];
+var rotations = [0];
+
+
+
+
+var fade = 300; //clincher
+var scene = "logo"; //changes scene
+
+var f = function(x,y,font,size,words) {
+    textFont(createFont(font));
+    textSize(size);
+    textAlign(CENTER);
+    fill(0, 0, 0,50);
+  text(words,x,y+5);
+  fill(255, 255, 255);
+  text(words,x,y);
+}; //my special font ^_^
+var cloud = function(x, y, sz){
+    noStroke();
+    pushMatrix();
+    translate(x, y);
+    scale(sz/10);
+    rectMode(CENTER);
+    fill(245);
+    rect(0, 0, 100, 20, 30);
+    ellipse(-25, -13, 30, 23);
+    ellipse(25, -13, 40, 33);
+    ellipse(0, -19, 50, 50);
+    fill(230);
+    (rect)(-25, 0, 50, 20, 30, 0, 0, 30);
+    arc(0, -19, 50, 50, -270, -90);
+    ellipse(-25, -13, 30, 23);
+    rectMode(CORNER);
+    popMatrix();
+}; 
+var oak = function(x,y,size) {
+   pushMatrix();
+   translate(this.x,this.y);
+   scale(size);
+    noStroke();
+    //trunk and branches
+    fill(163, 98, 0);
+    triangle(x-40,y,x,y-90,x+15,y);
+    fill(181, 133, 62);
+    triangle(x+15,y,x,y-90,x+40,y-5);
+  fill(163,98,0);
+    triangle(x+40,y-5,x,y-90,x+20,y-90);
+ fill(122, 73, 0);
+    triangle(x-40,y,x,y-90,x-10,y-105);
+    fill(133, 80, 0);
+    triangle(x-40,y,x-10,y-105,x-30,y-215);
+    fill(87, 52, 0);
+    triangle(x+20,y-90,x+0,y-90,x+75,y-160);
+    fill(186, 138, 71);
+    triangle(x-10,y-105,x+0,y-90,x+75,y-160);
+    fill(59, 35, 0);
+    triangle(x-30,y-215,x-47,y-189,x-40,y);
+    fill(87, 52, 0);
+    triangle(x-69,y-9,x-40,y-0,x-42,y-66);
+    fill(66, 40, 1);
+    triangle(x-140,y-200,x-45,y-135,x-44,y-120);
+    fill(150, 90, 0);
+    triangle(x-140,y-200,x-45,y-135,x-45,y-145);
+    
+    fill(153, 93, 2);
+    quad(x-30,y-215,x-17,y-209,x+10,y-118,x-10,y-105);
+    popMatrix();
+    
+    
+}; //the oak tree
+
+var factoryBg = function() {
+   {
+       pushMatrix();
+       translate(52,90);
+            rectMode(CENTER);
+       background(107+sin(frameCount*10)*10, 0, 0);
+       noStroke();
+       fill(0, 0, 0);
+       rect(231,435,332,123,5);  
+       rect(301,359,61,150,10);
+       fill(0);
+       ellipse(290,269,40,40);
+       fill(50);
+       ellipse(295,260,30,30);
+       fill(100);
+       ellipse(315,278,30,30);
+       ellipse(313,242,30,30);
+       fill(150);
+       ellipse(321,264,30,30);
+       ellipse(341,247,30,30);
+       ellipse(376,261,30,30);
+       ellipse(419,243,25,25);
+       fill(200);
+       ellipse(460,277,20,20);
+       popMatrix();
+        }//the background  
+};//factory and forest backgrounds
+var forestBg = function() {
+    background(0, 97, 176);
+        cloud(167,100,20);
+cloud(300,200,13);
+cloud(500,130,10);
+    for(var i = 600; i <0; i--) {
+     noStroke();
+     line(0,i,600,i);
+    }
+  rectMode(CENTER);
+    oak(315,975,0.5);
+    pushMatrix();
+    rotate(-10);
+    oak(412,641,0.8);
+    rotate(38);
+    oak(217,363,1);
+    
+    popMatrix();
+
+   
+   
+
+    
+    fill(69, 42, 1);
+triangle(0,600,0,400,300,600);
+fill(64, 36, 1);
+triangle(383,666,126,485,406,420);
+fill(48, 31, 3);
+triangle(900,600,388,600,406,421);
+
+
+};
+
+var vars = {pieY: 500, textX: 500, trans: width+height};
+var logo = function() {
+    rectMode(CENTER);
+textAlign(CENTER, CENTER);
+textFont(createFont("Impact"));
+          background(156, 82, 22);
+        for(var i = 0; i < width+100; i += 100){
+            strokeWeight(50);
+            stroke(0, 0, 0, 20);
+            line(i, 0, i+50, 600);
+            strokeWeight(25);
+            stroke(0, 0, 0, 20);
+            line(i, 0, i+50, 600);
+            strokeWeight(5);
+            stroke(255, 255, 255, 60);
+            line(i+50, 0, i+100, 600);
+        }
+        pushMatrix();
+        translate(300, 300 + vars.pieY);
+        rotate(0);
+        translate(-200, vars.pieY - 250);
+        noStroke();
+        fill(204, 153, 110);
+        ellipse(200, 222, 263, 100);
+        fill(0, 0, 0, 30);
+        arc(160, 190, 15, 15, 20, 200);
+        arc(200, 190, 15, 15, 0, 180);
+        arc(240, 190, 15, 15, -20, 160);
+        triangle(153, 187, 167, 193, 168, 180);
+        triangle(208, 190, 193, 190, 200, 180);
+        triangle(247, 187, 233, 193, 233, 183);
+        fill(209, 209, 209);
+        rect(200, 250, 250, 50, 10);
+        triangle(60, 225, 85, 225, 75, 270);
+        triangle(340, 225, 315, 225, 325, 270);
+        for(var i = 63; i < 344; i += 15){
+            fill(0, 0, 0, 40);
+            ellipse(i+1, 223, 20, 20);
+            fill(204, 153, 110);
+            ellipse(i, 225, 20, 20);
+        }
+        popMatrix();
+        
+        
+        fill(255);
+        pushMatrix();
+        translate(vars.textX + 300, 250);
+        textSize(55);
+        textLeading(63);
+        text("THE\n#1\n\n\nPROPONENT", 0, 0);
+        popMatrix();
+        
+        fill(255, 255, 255); // CHANGE THIS TO WHATEVER YOUR GAME BACKGROUND IS.
+        rect(300, vars.trans + 300, width, height);
+        
+        vars.pieY /= 1.1;
+        if(vars.pieY < 1){
+            vars.textX /= 1.1;
+        }
+        if(vars.textX < 1){
+            vars.trans /= 1.1;
+        }
+        if(vars.trans < 1){
+            scene = "menu";
+        }
+    
+}; //my logo. Thanks, Chester!
+
+var play = function(x,y) {
+    textFont(createFont("Trebuchet MS"));
+    
+    
+    fill(143, 14, 14);
+    
+if(mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    fill(120, 9, 9);
+}
+   
+    (rect)(x, y, 150, 50, 0, 100, 0, 100); 
+    textSize(31);
+    fill(255, 255, 255);
+    f(x,y+10,"Arial Bold",32,"Begin");
+    if(mouseIsPressed && mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    scene = "first stage";
+}
+}; //various menu buttons
+var how = function(x,y) {
+    textFont(createFont("Trebuchet MS"));
+    
+    
+    fill(143, 14, 14);
+    
+if(mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    fill(120, 9, 9);
+}
+    (rect)(x, y, 150, 50, 0, 100, 0, 100); 
+    textSize(31);
+    fill(255, 255, 255);
+    f(x,y+10,"Arial Bold",32,"How To");
+    if(mouseIsPressed && mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    scene = "how";
+}
+};
+var back = function(x,y) {
+    textFont(createFont("Trebuchet MS"));
+    
+    
+    fill(143, 14, 14);
+    
+if(mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    fill(120, 9, 9);
+}
+    (rect)(x, y, 150, 50, 0, 100, 0, 100); 
+    textSize(31);
+    fill(255, 255, 255);
+    f(x,y+10,"Arial Bold",32,"Back");
+    if(mouseIsPressed && mouseX > x -75 && mouseX < x+75 && mouseY < y+25 && mouseY > y-25) {
+    scene = "menu";
+    
+   
+}
+};
+
+var possibleLeaves = [getImage("avatars/leaf-orange"), getImage("avatars/leaf-red")];
+var leaf = function(){
+    this.x = random(0, 600);
+    this.y = -20;
+    this.r = random(0, 360);
+    this.sz = random(40, 60);
+    this.leafy = round(random(0, possibleLeaves.length-1));
+    this.speed = random(3, 10);
+};
+var leaves = [];
+leaf.prototype.draw = function() {
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(frameCount*5 + this.r);
+    image(possibleLeaves[this.leafy], 0, 0, this.sz, this.sz);
+    this.y += this.speed;
+    popMatrix();
+};
+var leafRain = function() {
+    if(frameCount % 6 === 5){
+                leaves.push(new leaf());
+            }
+            for(var i in leaves){
+                leaves[i].draw();
+                if(leaves[i].y > 620){
+                    leaves.splice(i, 1);
+                }
+            }
+};//makes the leaves fall
+
+
+
+  
+  
+
+
+var menu = function() {
+background(0, 49, 133);
+fill(0,0,0,50);
+triangle(0,0,0,300,600,0);
+triangle(600,600,0,600,600,300);
+pushMatrix();
+cloud(238,100,20);
+cloud(500,300,13);
+popMatrix();
+rectMode(CENTER);
+oak(52,166,3.9);
+
+ time++;
+        if (time > 250) {
+            nice = random(0, niceNum - 1);
+            time = 0;
+        }
+
+f(300,200,"Arial Black",91,"The Forest");
+f(300,245,"Arial Black",24,"The sequel to the hit game, Acid Escape");
+f(422,145,"Arial Black",20,"By #1 Pie Proponent");
+f(300,530,"Arial Black",20,niceness[round(nice)]);
+play(300,350);
+how(300,450);
+
+if(isRaining) {
+   leafRain();
+}         
+
+        
+
+}; //menu
+
+var keyPressed = function(){keys[keyCode] = true;};
+var keyReleased = function(){keys[keyCode] = false;};
+
+var Block = function(x, y, type){
+    
+    this.x = x;
+    this.y = y;
+    this.w = 40;
+    this.h = 40;
+    this.type = type;
+}; //kinds of blocks
+Block.prototype.draw = function(){
+    
+    switch(this.type){
+        
+        case 'facNormal':
+            noStroke();
+           fill(196, 65, 0);
+            
+            rect(this.x, this.y, 40, 40);
+            fill(0,0,0,30);
+            rect(this.x,this.y-13,40,15);
+            
+               stroke(20);
+            strokeWeight(2);
+            strokeCap(SQUARE);
+            line(this.x-20,this.y-5,this.x+20,this.y-5);
+            line(this.x-20,this.y+10,this.x+20,this.y+10);
+            line(this.x-10,this.y-5,this.x-10,this.y+10);
+            line(this.x+10,this.y-5,this.x+10,this.y+10);
+            line(this.x,this.y-20,this.x,this.y-5);
+            line(this.x,this.y+10,this.x,this.y+20);
+          
+            
+        break;
+        case 'forNormal':
+            noStroke();
+             fill(156, 133, 0);
+            
+            rect(this.x, this.y, 40, 40,5);
+            
+            fill(0,0,0,30);
+            rect(this.x,this.y-10,40,20,5);    
+            
+        break;
+        case 'end':
+            noStroke();
+            //fill(162, 0, 255);
+            
+            fill(color(sin(frameCount*3)*100+100,sin(frameCount*3+90)*130+130,sin(frameCount*3+180)*110+110, 500));
+            ellipse(this.x,this.y,40,40);
+
+        break;
+        case 'acid':
+            
+            noStroke();
+          
+            
+            fill(33, 199+sin(frameCount*5)*9, 0);
+            
+            rect(this.x, this.y, 40, 40);
+            
+            fill(0,0,0,30);
+            rect(this.x,this.y+15,40,15);
+            
+               stroke(25, 150, 0);
+               strokeWeight(2);
+          noFill();
+          arc(this.x-10,this.y,10,10,-180,0);
+          arc(this.x+5,this.y-5,7,7,-180,0);
+         
+          arc(this.x+13,this.y+15,6,6,-180,0);
+        
+            
+        break;
+        case 'topsoil':
+          noStroke();
+          fill(156, 133, 0);
+            
+            rect(this.x, this.y, 40, 40,5);
+            
+            fill(0,0,0,30);
+            rect(this.x,this.y-10,40,20,5);   
+            fill(133, 86, 0);
+            triangle(this.x-15,this.y-20,this.x-4,this.y-20,this.x+10+sin(frameCount*5)*8,this.y-60);
+            triangle(this.x+8,this.y-20,this.x+4,this.y-20,this.x-24+sin(frameCount*3)*4,this.y-60);
+            triangle(this.x+18,this.y-20,this.x+1,this.y-20,this.x-2+sin(frameCount*5)*6,this.y-60);
+            triangle(this.x+8,this.y-20,this.x+4,this.y-20,this.x+24+sin(frameCount*3)*10,this.y-60);
+            triangle(this.x-6,this.y-20,this.x+12,this.y-20,this.x+30+sin(frameCount*8)*8,this.y-55);
+            
+        break;
+     
+    }
+}; //draws all those blocks 
+
+// factory ground = 1 acid = 3 portal = 4  forest ground = 4 topsoil/grass = 5
+//Put in the tips and thanks if you made a level. I might just add it! //players spawns on the seconds collum at the bottom row
+var levels = [
+    [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1],
+    [1,0,0,0,1,0,0,0,0,0,0,1,0,0,1,1],
+    [1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,1]],
+    
+    [[1,3,1,1,1,1,1,1,1,1,1,3,1,1,1,1],
+    [1,3,0,0,0,0,0,0,0,0,0,3,0,0,0,1],
+    [1,3,0,0,0,0,0,0,0,0,0,3,0,0,0,1],
+    [1,3,0,0,0,0,0,0,0,0,0,3,0,0,0,1],
+    [1,3,3,0,0,0,0,0,0,0,0,1,0,0,0,1],
+    [1,3,0,0,0,0,0,0,0,0,0,4,0,0,0,1],
+    [1,3,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+    [1,3,0,0,3,0,0,0,0,0,0,3,0,0,0,1],
+    [1,1,0,1,3,0,0,0,0,0,0,0,0,0,1,1],
+    [1,0,0,1,3,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,3,0,0,0,0,0,0,0,0,1,0,1],
+    [1,0,0,1,3,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,1,3,0,0,0,0,0,0,0,0,0,1,1],
+    [1,0,0,1,3,3,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,3,3,3,3,3,3,1,1,1,3,3,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+    
+    [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,3,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+    [1,3,1,0,0,0,0,1,3,1,0,0,0,0,0,1],
+    [1,3,0,0,0,0,0,0,3,0,0,1,1,1,1,1],
+    [1,3,0,1,0,0,0,0,3,0,0,0,0,0,0,1],
+    [1,3,0,0,0,0,0,0,3,0,0,0,0,0,0,1],
+    [1,3,0,0,0,0,0,1,3,0,0,0,0,0,0,1],
+    [1,1,0,0,0,0,0,0,3,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,3,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,1,3,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,3,0,0,0,0,0,4,1],
+    [1,0,0,0,0,0,0,0,3,1,0,0,0,0,1,1],
+    [1,1,3,3,3,3,3,3,3,3,3,3,1,1,1,1]],
+
+    [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1],
+    [1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+    [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,3,1,1,0,0,0,0,1,0,0,1,0,0,0,1],
+    [1,1,1,3,3,3,3,3,1,0,0,1,1,1,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,1,0,1,0,1,0,0,0,0,1,1],
+    [1,0,1,1,3,3,3,3,3,3,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,3,3,1,1,1]],
+    
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,1],
+    [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,1,0,3,0,3,3,1,1,1,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+    [1,0,0,1,0,1,0,1,0,1,1,0,0,0,0,1],
+    [1,0,1,3,3,3,3,3,3,3,1,3,3,3,3,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+
+    
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,3,3,3,3,3,3,4,3,3,3,3,1]],
+    
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,1,0,0,0,0,0,0,0,4,1],
+    [1,0,0,0,0,1,1,3,3,3,3,3,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+    
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+    [1,1,1,1,3,3,3,3,3,1,3,3,3,3,3,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+    
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
+    [1,0,0,0,0,0,0,0,1,1,0,1,0,0,0,1],
+    [1,0,0,0,0,0,1,1,0,1,0,1,0,0,0,1],
+    [1,0,0,0,1,1,0,1,0,1,0,1,0,0,0,1],
+    [1,0,0,1,0,1,0,1,0,1,0,1,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+    
+    //forest stages use 2 as the main block
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0],
+    [2,5,5,2,5,5,5,5,2,2,5,5,5,2,5,2]],
+    
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0],
+    [0,0,0,0,2,0,0,0,5,2,0,0,0,0,0,0],
+    [0,0,0,5,2,0,0,2,2,2,0,0,0,0,4,0],
+    [2,5,5,2,2,5,5,2,2,2,5,5,2,2,5,2]],
+    
+    [[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2],
+    [2,0,0,0,0,0,5,0,0,0,0,0,5,2,5,2],
+    [2,0,0,0,5,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,5,5,2,5,5,2,5,5,2,5,5,2,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,5,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,5,5,2,5,2,5,5,5,5,2,2,2,2],
+    [2,0,5,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,2,5,5,2,5,2,5,5,2,5,5,5,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,5,2,5,5,2,2,2,5,5,5,2,5,2,5,2]],
+    
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0],
+    [2,5,5,3,3,3,3,5,5,3,3,3,3,2,5,2]],
+    
+    [[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,3,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,4,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,2,5,5,0,0,0,0,0,2],
+    [2,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2],
+    [2,0,2,5,0,0,2,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,2,2,0,0,5,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,2,2,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,0,0,0,0,5,2],
+    [2,0,0,5,0,2,0,5,0,5,0,0,0,5,2,2],
+    [2,0,5,2,3,3,3,3,3,2,5,5,3,3,3,2],
+    [2,5,2,2,2,2,2,2,2,2,2,2,2,2,2,2]],
+    
+     [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0],
+    [2,5,3,3,3,3,3,5,2,3,3,3,3,3,5,2]],
+    
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    
+    
+    
+   
+]; //the levels
+
+var drawStage = function(){
+    blocks = [];
+    for(var p = 0; p < levels[currentLevel].length; p++){
+        for(var a = 0; a < levels[currentLevel][p].length; a++){
+            switch(levels[currentLevel][a][p]){
+                case 1:
+                    blocks.push(new Block(p * 40, a * 40, 'facNormal'));
+                break;
+                case 2:
+                    blocks.push(new Block(p * 40, a * 40, 'forNormal'));
+                break;
+                case 3:
+                    blocks.push(new Block(p * 40, a * 40, 'acid'));
+                break;
+                case 4:
+                    blocks.push(new Block(p * 40, a * 40, 'end'));    
+                break;
+                case 5:
+                    blocks.push(new Block(p * 40, a * 40, 'topsoil'));   
+                break;
+            }
+        }
+    }
+}; //this sifts through the array, and finds the numbers, each number draws a different block
+drawStage();
+var Player = function(){
+    
+    this.x = 40;
+    this.y = 520;
+    this.w = 40;
+    this.h = 40;
+    this.xvel = 0;
+    this.yvel = 0;
+    this.falling = true;
+    
+    this.gravity = 0.375;
+    this.jumpHeight = 9;
+    this.maxFallSpeed = 12;
+    
+    this.moveSpeed = 0.5;
+    this.maxMoveSpeed = 5;
+    
+    this.update = function(platforms){
+
+        if(keys[LEFT]){
+            
+            this.xvel -= this.moveSpeed;
+        }
+        if(keys[RIGHT]){
+            
+            this.xvel += this.moveSpeed;
+        }
+        
+        if(!keys[LEFT] && !keys[RIGHT]){
+            
+            if(this.xvel > 0){
+                
+                this.xvel -= this.moveSpeed;
+            }
+            
+            if(this.xvel < 0){
+                
+                this.xvel += this.moveSpeed;
+            }
+            
+            if(this.xvel < 0.1 && this.xvel > 0){
+                
+                this.xvel = 0;
+            }
+            
+            if(this.xvel > -0.1 && this.xvel < 0&& this.x > 20 && this.x < 580){
+                
+                this.xvel = 0;
+            }
+        }
+
+        if(keys[UP] && !this.falling){
+            
+            this.yvel = -this.jumpHeight;
+        }
+        
+        this.yvel += this.gravity;
+        
+        if(this.yvel > this.maxFallSpeed){
+            
+            this.yvel = this.maxFallSpeed;
+        }
+        
+        if(this.xvel > this.maxMoveSpeed ){
+            
+            this.xvel = this.maxMoveSpeed;
+        }
+            
+        if(this.xvel < -this.maxMoveSpeed  ){
+            
+            this.xvel = -this.maxMoveSpeed;
+        }
+        
+        this.x += this.xvel;
+
+        this.collideWith(this.xvel, 0, blocks);
+
+        this.falling = true;
+        
+        this.y += this.yvel;
+
+        this.collideWith(0, this.yvel, blocks);
+        
+       
+    };
+
+    this.collideWith = function(xv, yv, platforms){
+        
+       
+        for (var i = 0; i < blocks.length; i++){
+            var p = blocks[i];
+            if( this.y + this.h > p.y && this.y < p.y + p.h && this.x + this.w > p.x && this.x < p.x + p.w){
+                
+                if(yv > 0){
+                    this.yvel = 0;
+                    this.falling = false;
+                    this.y = p.y - this.h;
+                    
+                    if(blocks[i].type === 'end'){
+                        currentLevel++;
+                        drawStage();
+                        this.x = 40;
+                        this.y = 520;
+                        return;
+                    }
+                    
+                    if(blocks[i].type === 'acid'){
+                        this.x = 40;
+                        this.y = 520;
+                    }
+                }
+
+                if(yv < 0) {
+                    this.yvel = 0;
+                    this.falling = true;
+                    this.y = p.y + p.h;
+                    
+                    if(blocks[i].type === 'end'){
+                        currentLevel++;
+                        drawStage();
+                        this.x = 40;
+                        this.y = 520;
+                        return;
+                    }
+                    
+                    if(blocks[i].type === 'acid'){
+                        this.x = 40;
+                        this.y = 520;
+                    }
+                }
+
+                if(xv > 0) {
+                    this.xvel = 0;
+                    this.x = p.x - this.w;
+                    
+                    if(blocks[i].type === 'end'){
+                        currentLevel++;
+                        drawStage();
+                        this.x = 40;
+                        this.y = 520;
+                        return;
+                    }
+                    
+                    if(blocks[i].type === 'acid'){
+                        this.x = 40;
+                        this.y = 520;
+                    }
+                }
+
+                if(xv < 0) {
+                    this.xvel = 0;
+                    this.x = p.x + p.w;
+                    
+                    if(blocks[i].type === 'end'){
+                        currentLevel++;
+                        drawStage();
+                        this.x = 40;
+                        this.y = 520;
+                        return;
+                    }
+                    
+                    if(blocks[i].type === 'acid'){
+                        this.x = 40;
+                        this.y = 520;
+                    }
+                }
+            }
+        }
+        
+    };
+    
+    this.draw = function(){
+        
+        fill(0, 179, 255);
+        noStroke();
+        rect(this.x, this.y, this.w, this.h, 3);
+        fill(0);
+        ellipse(this.x-10,this.y,10,10);
+        ellipse(this.x+10,this.y,10,10);
+        fill(255);
+        ellipse(this.x-11,this.y-2,5,5);
+        ellipse(this.x+9,this.y-2,5,5);
+        noFill();
+        stroke(0);
+        arc(this.x,this.y+10,13,-5,0,180);
+    };
+    
+};//complicated player physics
+
+
+var p = new Player();
+
+
+draw = function() {
+    if(scene === "logo") {
+        logo();
+    } //logo scene
+    if(scene === "menu") {
+        menu();
+       
+    } //menu scene
+    if(scene === "first stage") {
+        
+       
+       if(currentLevel >=0 && currentLevel <= 8) {
+        factoryBg();   
+       } //tells when the factory is used
+       if(currentLevel > 8) {
+           forestBg();
+           if(isRaining) {
+           leafRain();
+           }
+       } //tells when the forest is used
+       
+        p.draw(); //draws player
+        noStroke();
+            p.update(blocks); //collision updater
+       
+        
+        for(var i = 0; i < blocks.length; i++){
+            blocks[i].draw();
+        }
+        {
+        if(currentLevel === 0) {
+         f(297,227,"Arial Black",25,"Oh look, a long jump. Am I almost out?");   
+        }
+        if(currentLevel === 1) {
+         f(264,82,"Arial Black",25,"More acidfalls. \nWhat is actually\n going on here?");
+        }
+        if(currentLevel === 2) {
+          
+         f(301,73,"Arial Black", 25, "I need to find out.");   
+        }
+        if(currentLevel === 3) {
+        f(300,70,"Arial Black",25,"It almost seems like they're\ntrying to keep me in here.");   
+        }
+        if(currentLevel === 4) {
+         f(300,70,"Arial Black",25,"What did I do to deserve this??");
+
+        }
+        if(currentLevel === 5) {
+            
+         f(300,70,"Arial Black",25,"I just woke up one day, and I was here.");   
+        }
+        if(currentLevel === 6) {
+         f(300,200,"Arial Black",25,"The Forest will be my only \nhope for survival.");
+        }
+        if(currentLevel === 7) {
+         f(282,300,"Arial Black",25,"If I make it out.");   
+        }
+        if(currentLevel === 8) {
+         f(300,100,"Arial Black",25,"Is that it? Could it be the way out?");   
+        }
+        if(currentLevel === 9) {
+         f(300,276,"Arial Black",30,"I made it!");   
+        }
+        if(currentLevel === 10) {
+         f(300,276,"Arial Black",25,"What happened here?");   
+        }
+        if(currentLevel === 11) {
+         f(324,181,"Arial Black",25,"The acid must have polluted it.\n\n\n\nIt's that cursed factory.");   
+        }
+        if(currentLevel === 12) {
+         f(300,200,"Arial Black",25,"AHHH! The acid is still here!");   
+        }
+        if(currentLevel === 13) {
+         f(300,248,"Arial Black",25,"They destroyed this forest.");   
+        }
+        if(currentLevel === 14) {
+         f(300,200,"Arial Black",25,"I need to end this.\n I will destroy the Factory.");   
+        }
+        }//In game messages
+        
+        if(currentLevel === 15) {
+            background(255, 0, 0);
+            fill(0,0,0,50);
+            triangle(0,0,0,300,600,0);
+            triangle(600,600,0,600,600,300);
+            oak(52,166,3.9);
+            f(300,300,"Arial Black",40,"To be continued....");
+            
+            fill(0,0,0,fade);
+            rect(300,300,600,600);
+            fade --;
+        }//if you reach the end area
+         
+    }//draws the stages
+        
+    if(scene === "how") {
+background(0, 49, 133);
+fill(0,0,0,50);
+triangle(0,0,0,300,600,0);
+triangle(600,600,0,600,600,300);
+oak(52,166,3.9);
+        
+        f(306,250,"Arial Black",25,"Use the arrow keys to move.\n Don't touch the Acid. \nReach the portal to move on.");
+        back(500,550);
+    }//draws the "how to" page
+};//WOW! 1018 lines of code!
