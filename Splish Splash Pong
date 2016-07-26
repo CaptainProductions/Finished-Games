@@ -1,0 +1,725 @@
+/*
+        Splish Splash Pong - A remake of a game by Happymagenta.
+        
+        If it does not load initally, just press restart.
+        
+        First voter: Stargazer(Nobody) :P
+        
+        A few things I would like to note about this game.
+        1st, it's my first collab. Second, it's my first completed collab. ^A^
+        3rd, I got to work with Nobody! ( Stargazer )
+        Thank you to AquaOrchid for fixing the mask on the title page.
+        
+        Spin-off if you get a high score.
+        
+        HIGH SCORES: DO NOT SPAM UNLESS YOU SET ONE.
+        1. 99 - LoganWeisberg
+        2. 25 - Captain
+        3. 23 - Stargazer (Nobody) 
+        
+        Subscribe to me - http://bit.ly/2a8JTJz
+        Subscribe to Nobody - http://bit.ly/1NqViSy
+
+
+
+*/
+var scene = "logo";
+var mouse = {
+    clicked: false,
+    overButton: false,
+};
+
+
+var dir;
+var speed = 10;
+var y = 100;
+var coinPos = 70;
+var x = 0;
+var score = 0, best = 0;
+var goingUp = false;
+var fade = 0;
+var isFading = false;
+var speed = 5;
+var timer = 0;
+var pirateHat = function(x, y) {
+    fill(50);
+    stroke(255, 234, 97);
+    strokeWeight(10);
+    strokeCap(SQUARE);
+    arc(x, y, 280, 223, -180, 0);
+    line(x - 145, y, x + 145, y);
+    noStroke();
+    rectMode(CENTER);
+    fill(242, 106, 106);
+    rect(x, y + 15, 120, 20);
+
+    pushMatrix();
+    rotate(30);
+    translate(42, 23);
+    beginShape();
+    vertex(201, 75);
+    bezierVertex(215, 98, 220, 127, 196, 161);
+    bezierVertex(179, 134, 182, 99, 201, 75);
+    endShape();
+    popMatrix();
+
+    fill(255);
+    pushMatrix();
+    rotate(46);
+
+    translate(50, -207);
+    rect(199, 166, 12, 87, 200);
+    rotate(-90);
+    rect(-166, 199, 12, 87, 200);
+    popMatrix();
+
+    ellipse(x, y - 55, 50, 50);
+    fill(0);
+    arc(x - 10, y - 55, 10, 10, 0, 180);
+    arc(x + 10, y - 55, 10, 10, 0, 180);
+
+
+
+
+    fill(0, 0, 0, 50);
+    noStroke();
+    arc(x, y + 5, 296, 240, -90, 0);
+    rect(x + 30, y + 15, 60, 20);
+
+
+};
+var rectPos = -400;
+var sharks = [];
+
+var death = false;
+var coinside = "bottom";
+var shark = function(x, y, size, dir, speed, dif) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.dir = dir;
+    this.speed = size/random(3.5,5.5);
+    this.dif = dif;
+};
+shark.prototype.draw = function() {
+    switch (this.dir) {
+        case 'left':
+            {
+                
+                rectMode(CENTER);
+                stroke(0);
+                strokeWeight(this.size / 20);
+                fill(56, 114, 173);
+                (rect)(this.x, this.y, this.size, this.size, this.size / 5, this.size / 10, 0, 0);
+                noStroke();
+
+                rect(this.x, this.y, this.size - this.size / 7.5, this.size / 4.2);
+                noStroke();
+                fill(37, 86, 135);
+                (rect)(this.x, this.y + this.size / 3.6, this.size - this.size / 16.8, this.size / 2.3, this.size / 15, this.size / 15, 0, 0);
+
+
+
+
+                fill(56, 114, 173);
+                strokeWeight(this.size / 20);
+                stroke(0);
+                triangle(this.x + this.size / 4.1, this.y - this.size / 1.4, this.x - this.size / 4.9, this.y - this.size / 3.6, this.x + this.size / 4.0, this.y - this.size / 3.6);
+
+                triangle(this.x + this.size / 2, this.y, this.x + this.size / 2, this.y + this.size / 3, this.x + this.size, this.y);
+                noStroke();
+                rect(this.x, this.y - this.size / 6.5, this.size / 1.7, this.size / 2.7);
+
+                fill(0, 255, 0);
+                rect(this.x - this.size / 3.4, this.y + this.size / 3.6, this.size / 10, this.size / 10);this.x -= this.speed;
+            }
+            break;
+        case "right":
+            {
+                rectMode(CENTER);
+
+
+                stroke(0);
+                strokeWeight(this.size / 20);
+                fill(56, 114, 173);
+                (rect)(this.x, this.y, this.size, this.size, this.size / 10, this.size / 10, 0, 0);
+                noStroke();
+
+                rect(this.x, this.y, this.size - this.size / 7.5, this.size / 4.2);
+                noStroke();
+                fill(37, 86, 135);
+                (rect)(this.x, this.y + this.size / 3.6, this.size - this.size / 16.8, this.size / 2.3, this.size / 15, this.size / 15, 0, 0);
+
+
+
+
+                fill(56, 114, 173);
+                strokeWeight(this.size / 20);
+                stroke(0);
+                triangle(this.x - this.size / 4.1, this.y - this.size / 1.4, this.x - this.size / 4.9, this.y - this.size / 3.6, this.x + this.size / 4.0, this.y - this.size / 3.6);
+
+                triangle(this.x - this.size / 2, this.y, this.x - this.size / 2, this.y + this.size / 3, this.x - this.size, this.y);
+                noStroke();
+                rect(this.x, this.y - this.size / 6.5, this.size / 1.7, this.size / 2.7);
+
+                fill(0, 255, 0);
+                rect(this.x + this.size / 3.4, this.y + this.size / 3.6, this.size / 10, this.size / 10);this.x += this.speed;
+            }
+            break;
+            case "left-fix":
+                rectMode(CORNER);
+                 stroke(0);
+                strokeWeight(this.size / 20);
+                fill(56, 114, 173);
+                (rect)(this.x, this.y, this.size, this.size, this.size / 5, this.size / 10, 0, 0);
+                noStroke();
+
+                rect(this.x, this.y, this.size - this.size / 7.5, this.size / 4.2);
+                noStroke();
+                fill(37, 86, 135);
+                (rect)(this.x, this.y + this.size / 1.9, this.size - this.size / 16.8, this.size / 2.3, this.size / 15, this.size / 15, 0, 0);
+
+
+
+
+                fill(56, 114, 173);
+                strokeWeight(this.size / 20);
+                stroke(0);
+                triangle(this.x + this.size / 1.2, this.y - this.size / 1.4, this.x - this.size / 4.9, this.y - this.size / 3.6, this.x + this.size / 1.2, this.y - this.size / 9.0);
+
+                triangle(this.x + this.size / 15, this.y, this.x + this.size / 2, this.y + this.size / 3, this.x + this.size, this.y);
+                noStroke();
+                rect(this.x, this.y - this.size / 6.5, this.size / 1.7, this.size / 2.7);
+
+                fill(0, 255, 0);
+                rect(this.x - this.size / 3.4, this.y + this.size / 3.6, this.size / 10, this.size / 10);this.x -= this.speed;
+            break;
+        case "off":
+        break;
+    }
+    
+    if(this.x > 550 || this.x < -150){
+        this.dir = "off";
+    }
+    
+    
+
+
+};
+var ducky = function(x, y, size, wh) {
+    if (this.x > -10 && this.x < 410) {
+        switch (dir) {
+            case "forward":
+                
+                rectMode(CENTER);
+                fill(207, 133, 4);
+                stroke(0);
+                strokeWeight(size / 20);
+                rect(x, y + size / 6, size + size / 2, size / 1.5, size / 10);
+                noStroke();
+                fill(255, 255, 255, 50);
+                (rect)(x - size / 1.8, y + size / 15, size - size / 1.38, size / 2.5, size / 10, 0, 0, 0);
+                (rect)(x + size / 1.6, y + size / 15, size - size / 1.38, size / 2.5, 0, size / 10, 0, 0);
+
+                stroke(0);
+                strokeWeight(size / 20);
+                fill(255, 234, 0);
+                (rect)(x, y, size, size, size / 10, size / 10, 0, 0);
+                noStroke();
+
+                rect(x, y, size + size / 20, size / 4.2);
+                noStroke();
+                fill(224, 195, 7);
+                (rect)(x, y + size / 3.6, size + size / 20, size / 2.3, size / 15, size / 15, 0, 0);
+
+                stroke(0);
+                strokeWeight(size / 20);
+                fill(255, 111, 0);
+                rect(x, y + size / 2.2, size - size / 1.9, size / 3.6);
+                noStroke();
+                fill(0, 0, 0, 50);
+                rect(x, y + size / 1.9, size - size / 1.9, size / 10.0);
+
+                noStroke();
+                fill(0);
+                ellipse(x - size / 2.5, y + size / 3.4, size / 10, size / 10);
+                ellipse(x + size / 2.5, y + size / 3.4, size / 10, size / 10);
+
+                fill(255, 234, 0);
+                strokeWeight(size / 20);
+                stroke(0);
+                triangle(x + size / 4.1, y - size / 1.4, x - size / 4.9, y - size / 3.6, x + size / 4.0, y - size / 3.6);
+                noStroke();
+                rect(x, y - size / 6.5, size / 1.7, size / 2.7);
+                break;
+
+            case "backward":
+               
+                rectMode(CENTER);
+                stroke(0);
+                strokeWeight(size / 20);
+                fill(207, 133, 4);
+                rect(x, y + size / 6, size + size / 2, size / 1.5, size / 10);
+                noStroke();
+                fill(255, 255, 255, 50);
+                (rect)(x - size / 1.8, y + size / 15, size - size / 1.38, size / 2.5, size / 10, 0, 0, 0);
+                (rect)(x + size / 1.6, y + size / 15, size - size / 1.38, size / 2.5, 0, size / 10, 0, 0);
+
+                stroke(0);
+                strokeWeight(size / 20);
+                fill(255, 234, 0);
+                (rect)(x, y, size, size, size / 10, size / 10, 0, 0);
+                noStroke();
+
+                rect(x, y, size + size / 20, size / 4.2);
+                noStroke();
+                fill(224, 195, 7);
+                (rect)(x, y + size / 3.6, size + size / 20, size / 2.3, size / 15, size / 15, 0, 0);
+
+
+
+                fill(255, 234, 0);
+                strokeWeight(size / 20);
+                stroke(0);
+                triangle(x - size / 4.1, y - size / 1.4, x - size / 4.9, y - size / 3.6, x + size / 4.0, y - size / 3.6);
+                noStroke();
+                rect(x, y - size / 6.5, size / 1.7, size / 2.7);
+                break;
+        }
+        switch (wh) {
+            case "up":
+                dir = "backward";
+
+                break;
+            case "down":
+                dir = "forward";
+
+                break;
+
+        }
+    } else {
+
+    }
+    for(var i = 0; i < sharks.length-1; i ++){
+            if(x-size/2 < sharks[i].x+size/2 && x+size/2> sharks[i].x-size/2 && y-size/2 < sharks[i].y+size/2 && y+size/2 > sharks[i].y-size/2) {
+death = true;
+}
+    }
+
+};
+
+var numbers = [];
+var coiny = 2;
+
+var restart = function(x,y,size,txt,nxt) {
+
+    if(mouseX > size-size/25 && mouseX < size+size*2 && mouseY < size-size*-2.8 && mouseY > size-size*-2.3) {
+        mouse.overButton = true;
+        y+=5;
+        if(mouse.clicked) {
+          scene = nxt;
+          sharks = [];
+          numbers = [];
+          score = 0;
+          coiny = 2;
+          death = false;
+        }
+    }
+    textFont(createFont("Trebuchet MS"));
+        noStroke();    
+    rectMode(CENTER);
+    fill(219, 139, 0);
+    rect(x,y+10,size*2,size/2.5,100);
+    fill(255, 162, 0);
+    rect(x,y+3,size*2,size/2.5,100);
+    fill(255);
+    textSize(size/3.5);
+    text(txt,x,y);
+
+};
+
+var goalpost = function(x, y) {
+    strokeWeight(3);
+    stroke(0);
+    fill(0, 148, 111);
+    rectMode(CENTER);
+    rect(x, y, 80, 15);
+    fill(150, 144, 144);
+    rect(x - 45, y, 10, 20);
+    rect(x + 45, y, 10, 20);
+
+    noStroke();
+    fill(255, 255, 255, 100);
+    rect(x, y - 2, 77, 6);
+    rect(x - 45, y - 6, 7, 5);
+    rect(x + 45, y - 6, 7, 5);
+
+    fill(255);
+    rect(x - 64, y, 25, 25);
+    rect(x + 64, y, 25, 25);
+
+    fill(41, 41, 41, 50);
+    rect(x - 64, y + 10, 28, 71, 171);
+    rect(x + 64, y + 10, 28, 71, 171);
+
+    strokeWeight(5);
+    stroke(84, 84, 84);
+    strokeCap(SQUARE);
+    for (var i = y - 10; i < y + 13; i += 12) {
+        noFill();
+        stroke(255, 132, 0);
+        arc(x - 64, i, 23, 10, 0, 180);
+        arc(x + 64, i, 23, 10, 0, 180);
+        stroke(255, 255, 255);
+        arc(x - 64, i - 6, 23, 10, 0, 180);
+        arc(x + 64, i - 6, 23, 10, 0, 180);
+    }
+    stroke(255, 252, 252);
+    arc(x - 64, y + 8, 20, 10, 0, 180);
+    arc(x + 64, y + 8, 20, 10, 0, 180);
+
+    strokeWeight(3);
+    stroke(0, 0, 0);
+    line(x - 50, y - 20, x - 50, y + 10);
+    line(x - 78, y - 20, x - 78, y + 10);
+    line(x + 50, y - 20, x + 50, y + 10);
+    line(x + 78, y - 20, x + 78, y + 10);
+
+    fill(255, 255, 255);
+    ellipse(x - 64, y - 20, 26, 20);
+    ellipse(x + 64, y - 20, 26, 20);
+    noStroke();
+    ellipse(x - 64, y - 16, 25, 16);
+    ellipse(x + 64, y - 16, 25, 16);
+
+
+
+    noFill();
+    stroke(0, 0, 0);
+    strokeWeight(3);
+    arc(x - 64, y + 10, 25, 12, 0, 180);
+    arc(x + 65, y + 10, 25, 12, 0, 180);
+    
+    noStroke();
+    fill(0,0,0,20);
+        arc(x - 64, y - 18, 26, 22,-93,95);
+        arc(x + 64, y - 18, 26, 22,-93,95);
+        fill(0,0,0,40);
+        rect(x-57,y+-6,14,42);
+         rect(x+70,y+-6,14,42);
+
+
+
+
+
+
+
+};
+
+mouseClicked = function() {
+    mouse.clicked = true;
+    speed = -speed;
+    goingUp = !goingUp;
+
+    if (scene === "menu") {
+        isFading = true;
+    }
+    if(scene === "how") {
+        isFading = true;    
+    }
+};
+
+var coin = function(y) {
+    if (coiny === 1) {
+        y = 48;
+    } else if (coiny === 2) {
+        y = 300;
+    }
+    noStroke();
+    fill(0,0,0,60);
+    ellipse(200,y+33,29,17);
+    strokeWeight(3);
+    stroke(0);
+    fill(255, 234, 0);
+    quad(200,y,200-15,y+15,200,y+30,200+15,y+15);
+    noStroke();
+    fill(235, 176, 0);
+    quad(200,y,200-15,y+15,200,y+30,200+15,y+15);
+        fill(255, 255, 0);
+    quad(200,y+5,195-5,y+15,200,y+25,205+5,y+15);
+    fill(0,0,0,30);
+    triangle(200,y,200+15,y+15,200,y+30);
+    
+
+};
+var duckstate = "up";
+
+background(255, 145, 0);
+var board = get(60, 180, 280, 50); 
+strokeCap(ROUND);
+background(0, 0, 0);
+stroke(255, 255, 255);
+strokeWeight(8);
+line(80, 194, 320, 194);
+line(80, 200, 320, 200);
+line(70, 208, 330, 208);
+line(96, 216, 304, 216);
+
+strokeWeight(7);
+stroke(0, 0, 0);
+line(70, 200, 90, 200);
+line(310, 200, 322, 200);
+
+var m = get(60, 180, 280, 50);
+board.mask(m);
+draw = function() {
+    background(255);
+strokeWeight(11);
+   for (var i = 0; i < height + 40; i += 10) {
+        stroke(lerpColor(color(0, 171, 128), color(0, 94, 255), i / height));
+        line(0, i, width, i);
+    }
+
+    
+
+
+    if (scene === "logo") { 
+
+        pirateHat(200, 200); //don't change the x + y :P
+
+        fill(0, 0, 0, 100);
+        textFont(createFont("Trebuchet MS Bold"));
+        textAlign(CENTER, CENTER);
+        textSize(170);
+        text("?", 200, 295 + sin(frameCount * 3) * 5);
+        textSize(40);
+        text("Anonymous Pirate", 200, 50);
+        timer++;
+        if (timer > 300) {
+
+            isFading = true;
+
+        }
+        if (isFading) {
+            fade += 5;
+        } else {
+            fade -= 5;
+        }
+        if (!isFading) {
+            fade -= 5;
+        }
+        if (fade > 255) {
+            isFading = false;
+            scene = "menu";
+        }
+        if (fade <= 0) {
+            fade = 0;
+        }
+        fill(255, 255, 255, fade);
+        noStroke();
+        rect(200, 200, 400, 400);
+    }
+
+    if (scene === "menu") {
+
+        textAlign(CENTER, CENTER);
+        stroke(255);
+        strokeWeight(7);
+        fill(0, 153, 255);
+        ellipse(200, 220, 200, 200);
+        fill(0, 0, 0, 50);
+        arc(200, 220, 200, 200, -58, 128);
+   
+        image(board, 60, 180);
+        for (var i = 0; i < 360; i+=2) {
+            fill(0);
+            textSize(35);
+            textFont(createFont("DIN Condensed Italic"));
+            text("Splish Splash", 200 + cos(i), 205 + sin(i));
+
+
+
+        }
+        textFont(createFont("DIN Condensed Italic"));
+        textSize(35);
+        fill(255, 255, 0);
+        text("Splish Splash", 200, 205);
+        textSize(60);
+        textFont(createFont("Arial Black"));
+        fill(0, 90, 158);
+        textSize(60);
+        text("PONG", 200, 263);
+        fill(7, 189, 165);
+        text("PONG", 200, 252);
+        fill(0, 255, 221);
+        text("PONG", 200, 248);
+        
+        textSize(15);
+        fill(0,0,0,50);
+        text("A Cαptαιn and Nobody Production",255,390);
+        
+        fill(255);
+        text("> Click to start <",200,350);
+        
+
+
+        if (isFading) {
+            fade += 5;
+        } 
+        if (!isFading) {
+            fade -= 5;
+        }
+        if (fade > 255) {
+            isFading = false;
+            scene = "how";
+        }
+        if (fade <= 0) {
+            fade = 0;
+        }
+        fill(255, 255, 255, fade);
+        noStroke();
+        rect(200, 200, 400, 400);
+
+
+    }
+    if(scene === "how") {
+        
+        fill(255);
+        text("Click to change directions,\navoid the sharks,\ncollect the coins.",200,200);
+                if (isFading) {
+            fade += 5;
+        } else {
+            fade -= 5;
+        }
+        if (!isFading) {
+            fade -= 5;
+        }
+        if (fade > 255) {
+            isFading = false;
+            scene = "game";
+        }
+        if (fade <= 0) {
+            fade = 0;
+        }
+        fill(255, 255, 255, fade);
+        noStroke();
+        rect(200, 200, 400, 400);
+    }
+
+    if (scene === "game") {
+        if(death === true){
+            scene = "dead";
+        }
+        coin();
+        for (var i = 0; i < sharks.length - 1; i++) {
+            sharks[i].draw();
+        } {
+            y += speed;
+
+            if (!goingUp) {
+                duckstate = "down";
+
+                if (y > 400 - 80) {
+                    ducky(200, y, 20, "backward");
+                } else {
+                    ducky(200, y, 20, "forward");
+                }
+            }
+            if (goingUp) {
+                if (i) {}
+                duckstate = "up";
+                if (y < 70) {
+                    ducky(200, y, 20, "forward");
+                } else {
+                    ducky(200, y, 20, "backward");
+                }
+            }
+            if (y + 20 >= 355) {
+
+                speed = -abs(speed);
+                duckstate = 'up';
+                
+                goingUp = true;
+                if(coiny === 2){
+                score += 1;
+                coiny = 1;
+                }
+
+
+            }
+            if (y <= 60 ) {
+                if(coiny === 1){
+                coiny = 2;
+                score += 1;
+                }
+                duckstate = 'down';
+                speed = abs(speed);
+                
+                goingUp = false;
+
+            }
+
+            ducky(200, y, 20, duckstate);
+            strokeWeight(5);
+            stroke(0);
+            goalpost(200, 350);
+            goalpost(200, 35);
+
+            textFont(createFont("Trebuchet MS Bold"));
+            textSize(30);
+                text(score, 50, 60);
+        fill(7, 189, 165);
+        text(score, 50, 52);
+        fill(0, 255, 221);
+        text(score, 50, 48);
+
+        } //Duck and goalpost stuff. 
+        
+     
+
+        if (frameCount % 50  === 0) {
+            numbers.push(floor(random(1, 3)));
+            if (numbers[numbers.length - 1] ===1) {
+                sharks.push(new shark(random(490, 525), random(125, 300), random(15, 25), "left"));
+
+            } else {
+                sharks.push(new shark(random(-125, -25), random(125, 300), random(15, 25), "right"));
+            }
+
+        }
+    }
+     if(scene === "dead") {
+            textFont(createFont("Trebuchet MS Bold"));
+            textAlign(CENTER,CENTER);
+            textSize(50);
+        fill(0, 90, 158);
+        textSize(60);
+        text("SPLISH!", 200, 163);
+        fill(7, 189, 165);
+        text("SPLISH!", 200, 152);
+        fill(0, 255, 221);
+        text("SPLISH!", 200, 148);
+            textSize(40);
+            fill(179, 177, 227);
+            text("Your score was " + score + ".",200,200);
+            text("Your best is " + best + ".",200,249);
+            
+            restart(200,350,100,"play again","game");
+            
+            if(best < score)
+            {
+                best = score;
+            }
+            
+        }
+        if(scene === "log"){
+            var bill = new shark(105,100,25,"left",0);
+            var john = new shark(163,100,25,"left-fix",0);
+            bill.draw();
+            john.draw();
+        }
+    cursor(mouse.overButton ? 'pointer' : 'default');
+
+    mouse.overButton = false;
+    mouse.clicked = false;
+};
